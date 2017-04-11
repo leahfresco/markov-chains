@@ -18,6 +18,18 @@ def open_and_read_file(file_path):
 
     return contents
 
+def open_two_files(file_path1, file_path2):
+    """ Takes two file paths as a string and return the combined text as a string.
+    """
+    # Opens entire file and reads to a string
+    contents = open(file_path1).read()
+
+    # Opens second file and appends to a string
+    contents2 = open(file_path2).read()
+
+    contents += contents2
+    
+    return contents
 
 def make_chains(text_string, ngrams_size=2):
     """Takes input text as string; returns dictionary of markov chains.
@@ -53,8 +65,8 @@ def make_chains(text_string, ngrams_size=2):
 
         # Use List comprehension there
         key_list = []
-        for grams in range(ngrams_size):
-            key_list.append(words[i+grams])
+        key_list = (words[i+grams] for grams in range(ngrams_size))
+
         key = tuple(key_list)
 
         # Creates empty list if no value for key
@@ -74,6 +86,9 @@ def make_text(chains, ngrams_size=2):
     # Find a first random key
     next_key = choice(chains.keys())
 
+    while not next_key[0][0].isupper():
+        next_key = choice(chains.keys())
+
     # Adds first keys n words into words list
     words.extend(list(next_key))
 
@@ -85,18 +100,20 @@ def make_text(chains, ngrams_size=2):
         
         key_list = []
 
-        for grams in range(-ngrams_size, 0):
-            key_list.append(words[grams])
+        key_list = (words[grams] for grams in range(-ngrams_size, 0))
+
         next_key = tuple(key_list)
 
 
     return " ".join(words)
 
 
-input_path = sys.argv[1]
 
-# Open the file and turn it into one long string
-input_text = open_and_read_file(input_path)
+if len(sys.argv) == 3:
+    input_text = open_two_files(sys.argv[1], sys.argv[2])
+else:
+    # Open the file and turn it into one long string
+    input_text = open_and_read_file(sys.argv[1])
 
 #Ask user for n-gram size
 n_grams = raw_input("How long should n-grams be: ")
