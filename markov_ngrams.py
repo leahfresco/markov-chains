@@ -2,7 +2,6 @@
 import sys
 from random import choice
 
-
 def open_and_read_file(file_path):
     """Takes file path as string; returns text as string.
 
@@ -107,6 +106,20 @@ def make_text(chains, ngrams_size=2):
 
     return " ".join(words)
 
+def truncate_text(random_text, char_count=140):
+    """Truncates markov chain based on last punctuation and character count
+    """
+    if len(random_text) <= char_count:
+        return random_text
+    else:
+        random_text = random_text[0:char_count]
+        try:
+            while random_text[-1] not in ".?!":
+                random_text = random_text[:-1]
+        except IndexError:
+            random_text = ""
+    return random_text
+
 
 
 if len(sys.argv) == 3:
@@ -124,4 +137,7 @@ chains = make_chains(input_text, int(n_grams))
 # Produce random text
 random_text = make_text(chains, int(n_grams))
 
-print random_text
+# print "Full text: {}". format(random_text)
+print"Random text: {}".format(random_text)
+print"================================"
+print"Sliced text: {}".format(truncate_text(random_text))
